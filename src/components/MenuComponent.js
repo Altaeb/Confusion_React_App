@@ -16,7 +16,11 @@ class Menu extends Component {
     onDishSelect(dish) {
         this.setState({ selectedDish: dish});
     }
-
+    renderComments(dish) {
+        if (dish != null) {
+            
+                }
+    }
     render() {
         const menu = this.props.dishes.map((dish) => {
             return (
