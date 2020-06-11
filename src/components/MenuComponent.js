@@ -7,9 +7,6 @@ class Menu extends Component {
         super(props);
 
     }
-    componentDidMount() {
-        console.log('Menu Components componentDidMount is invoked');
-    }
 
 
     render() {

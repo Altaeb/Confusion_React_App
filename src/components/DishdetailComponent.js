@@ -4,6 +4,13 @@ import Moment from 'moment';
 
 class DishDetail extends Component{
 
+    componentDidMount() {
+      console.log('DishDetal Components componentDidMount is invoked');
+    }
+
+    componentWillUpdate() {
+      console.log('DishDetal Components componentDidUpdate is invoked');
+    }
 
     renderDish(dish) {
             return(
@@ -39,6 +46,9 @@ class DishDetail extends Component{
     }
 
     render() {
+
+        console.log('DishDetal Components render invoked');
+
         const dish = this.props.dish;
         if (dish != null) {
                return (
