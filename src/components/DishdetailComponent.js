@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Card, CardImg, CardText, CardBody, CardTitle,
    Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader,
-    ModalBody, Label, FormGroup, Row} from 'reactstrap';
+    ModalBody, Label, Col , Row} from 'reactstrap';
 import Moment from 'moment';
 import { Link } from 'react-router-dom';
 import { LocalForm, Control, Errors} from 'react-redux-form'
@@ -9,7 +9,6 @@ import { LocalForm, Control, Errors} from 'react-redux-form'
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
-
   function RenderDish({dish}) {
             return(
               <div className="col-12 col-md-5 m-1">
@@ -25,7 +24,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
 
   }
 
-  function  RenderComments({comments}) {
+  function  RenderComments({comments, addComment, dishId}) {
       if (comments != null){
           return(
             <div className="col-12 col-md-5 m-1">
@@ -40,6 +39,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
                       );
                   })}
               </ul>
+              <CommentForm dishId={dishId} addComment={addComment} />
             </div>
           );
       }else
@@ -48,6 +48,92 @@ const minLength = (len) => (val) => val && (val.length >= len);
           );
   }
 
+  class CommentForm extends Component {
+
+    constructor(props) {
+      super(props);
+  
+      this.state = {
+        isModalOpen: false
+
+      };
+  
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.toggleModal = this.toggleModal.bind(this);
+  }
+    handleSubmit(values) {
+      this.toggleModal();
+      this.props.addComment(this.props.dishId, values.rating, values.author, values.comment );
+      console.log('Current State is: ' + JSON.stringify(values))
+      alert('Current State is: ' + JSON.stringify(values))
+  }
+    toggleModal() {
+      this.setState({
+        isModalOpen: !this.state.isModalOpen
+      });
+    }
+  
+    render() {
+      return(
+          <React.Fragment>
+            <Button outline onClick={this.toggleModal}>
+              <span className="fa fa-pencil fa-lg">Submite Comment</span>
+            </Button>
+            <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+              <ModalHeader toggle={this.toggleModal}>Submite Comment</ModalHeader>
+              <ModalBody>
+                <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+                  <Row className="form-group">
+                    <Col>
+                      <Label htmlFor="username">Rating</Label>
+                      <Control.select model=".rating" name="rating"
+                      className="form-control">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </Control.select>
+                    </Col>
+                  </Row>
+                  <Row className="form-group">
+                    <Col>
+                      <Label htmlFor="author">Your Name</Label>
+                      <Control.text model=".author" name="author"
+                      className="form-control" placeholder="Your Name"
+                      validators={{
+                        required, minLength: minLength(3), maxLength: maxLength(15)
+                      }}
+                      />
+                      <Errors
+                      className="text-danger"
+                      model=".author"
+                      show="touched"
+                      messages={{
+                        required: 'Required ',
+                        minLength: 'Must be greater than 3 characters',
+                        maxLength: 'Must be 15 characters or less'
+                      }}
+                      />
+                    </Col>
+                  </Row>
+                  <Row className="form-group">
+                    <Col>
+                      <Label htmlFor="comment">Comment</Label>
+                      <Control.textarea model=".comment" name="comment"
+                      className="form-control" rows="6"/>
+                    </Col>
+                  </Row>
+                  <Row className="form-group">
+                    <Button outline className="form-control" color="primary">Submit</Button>
+                  </Row>
+                </LocalForm>
+              </ModalBody>
+            </Modal>
+          </React.Fragment>
+      );
+    }
+  }
 
   const DishDetail = (props) => {
         if (props.dish != null) {
@@ -61,12 +147,13 @@ const minLength = (len) => (val) => val && (val.length >= len);
                         <div className="col-12">
                             <h3>{props.dish.name}</h3>
                             <hr/>
-                          </div>
+                        </div>
                       </div>
                       <div className="row">
                         <RenderDish dish={props.dish} />
-                        <RenderComments comments={props.comments} />
-                        <CommentForm/>
+                        <RenderComments comments={props.comments} 
+                          addComment={props.addComment}
+                          dishId={props.dish.id}/>
                       </div>
                     </div>
                );
@@ -77,81 +164,6 @@ const minLength = (len) => (val) => val && (val.length >= len);
             }
           }
 
-class CommentForm extends Component {
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      IsModelOpen: false
-    };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.toggleModal = this.toggleModal.bind(this);
-}
-  handleSubmit(values) {
-    this.toggleModal();
-}
-  toggleModal() {
-    this.setState({
-      IsModelOpen: !this.state.IsModelOpen
-    });
-  }
-
-  render() {
-    return(
-        <React.Fragment>
-          <Button outline onClick={this.toggleModal}>
-            <span className="fa fa-pencil fa-lg">Submite Comment</span>
-          </Button>
-          <Modal isOpen={this.state.IsModelOpen} toggle={this.toggleModal}>
-            <ModalHeader toggle={this.toggleModal}>Submite Comment</ModalHeader>
-            <ModalBody>
-              <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
-                <FormGroup>
-                  <label htmlFor="username">Rating</label>
-                  <Control.select model=".rating" name="rating"
-                  className="form-control">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                  </Control.select>
-                </FormGroup>
-                <FormGroup>
-                  <label htmlFor="firstname">Your Name</label>
-                  <Control.text model=".name" name="name"
-                  className="form-control" placeholder="Your Name"
-                  validators={{
-                    required, minLength: minLength(3), maxLength: maxLength(15)
-                  }}
-                  />
-                  <Errors
-                  className="text-danger"
-                  model=".name"
-                  show="touched"
-                  messages={{
-                    required: 'Required ',
-                    minLength: 'Must be greater than 3 characters',
-                    maxLength: 'Must be 15 characters or less'
-                  }}
-                  />
-                  <FormGroup>
-                    <label htmlFor="comment">Comment</label>
-                    <Control.textarea model=".text" name="text"
-                    className="form-control" rows="6"/>
-                  </FormGroup>
-                </FormGroup>
-                <FormGroup>
-                  <Button outline className="form-control" color="primary">Submit</Button>
-                </FormGroup>
-              </LocalForm>
-            </ModalBody>
-          </Modal>
-        </React.Fragment>
-    );
-  }
-}
 
 export default DishDetail;
