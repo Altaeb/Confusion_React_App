@@ -184,3 +184,48 @@ export const addLeaders = (leaders) => ({
   type: ActionTypes.ADD_LEADERS,
   payload: leaders
 });
+
+export const postFeedback = (firstname, lastname, email, telnum, agree, contactType, message) => (dispatch) =>{
+         
+  const feedback = {
+      firstname : firstname,
+      lastname : lastname,
+      email : email,
+      telnum : telnum,
+      agree : agree,
+      contactType : contactType,
+      message : message
+  }
+
+  return fetch(baseUrl + 'feedback', {
+  method : "POST",
+  body : JSON.stringify(feedback),
+  headers : {
+      "Content-Type" : "application/json"
+  },
+  credential : "same-origin"
+  })
+  .then(response => {
+
+  if(response.ok){
+      return response;
+  }
+
+  else{
+      let error = new Error("Error " + response.status + " : " + response.statusText);
+      error.response = response;
+      throw error;
+  }
+  },
+  error => {
+      let errmess = new Error(error.message);
+      throw errmess;
+  })
+
+  .then(response => response.json())
+  .then(response => alert("Thank you for your feedback!" + JSON.stringify(response)))
+  .catch(error => {
+  console.log("Error : " + error.message);
+  alert("Form can't submited \n Error : " + error.message);
+  })    
+}

@@ -32,7 +32,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
 
   }
 
-  function  RenderComments({comments, postComment, dishId}) {
+  function  RenderComments({ comments, postComment, dishId }) {
       if (comments != null){
           return(
             <div className="col-12 col-md-5 m-1">
